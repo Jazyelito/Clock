@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Prime Clock</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --panel-bg: #16213e;
+            --accent: #e94560;
+            --lcd-green: #00ff41;
+            --shadow: 10px 10px 20px #0b0b15, -5px -5px 15px #252545;
+            --inner-shadow: inset 4px 4px 8px #0b0b15, inset -2px -2px 5px #252545;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Contenedor Principal Estilo Retro-Hardware */
+        .console {
+            background: var(--panel-bg);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid #2a2a4a;
+            text-align: center;
+            max-width: 500px;
+            position: relative;
+        }
+
+        /* Pantalla LCD */
+        .screen {
+            background: #050505;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: var(--inner-shadow);
+            margin-bottom: 25px;
+            border: 2px solid #333;
+        }
+
+        .prime-label {
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .current-prime {
+            font-size: 4rem;
+            color: var(--lcd-green);
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+            margin: 10px 0;
+        }
+
+        /* Contadores pequeños pero bonitos */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .stat-box {
+            padding: 5px 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 5px;
+            border-bottom: 1px solid var(--accent);
+        }
+
+        /* Frase Inspiracional */
+        .quote-box {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #ccc;
+            margin-top: 20px;
+            padding: 15px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .quote-box span {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Efecto de ruido/CRT opcional */
+        .screen::after {
+            content: " ";
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="console">
+        <div class="prime-label">Active Prime Frequency</div>
+        <div class="screen">
+            <div id="prime-display" class="current-prime">2</div>
+            <div class="stats">
+                <div class="stat-box">HRS TRANS: <span id="hrs-count">0</span></div>
+                <div class="stat-box">DAYS ACTIVE: <span id="days-count">0</span></div>
+            </div>
+        </div>
+
+        <div class="quote-box">
+            "La vida es como un <span>número primo</span>: única, indivisible por nada que intente romperla y con un propósito que solo el universo comprende. Agradece este nuevo ciclo."
+        </div>
+    </div>
+
+    <script>
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89];
+        
+        // Cargar datos de LocalStorage
+        let hoursTranscurred = parseInt(localStorage.getItem('hours')) || 0;
+        let daysActive = parseInt(localStorage.getItem('days')) || 0;
+
+        const display = document.getElementById('prime-display');
+        const hrsLabel = document.getElementById('hrs-count');
+        const daysLabel = document.getElementById('days-count');
+
+        // Configuración de audio
+        const ding = new Audio('https://google.com');
+        const dong = new Audio('https://google.com');
+
+        function updateClock() {
+            // Incrementar hora
+            hoursTranscurred++;
+            
+            // Lógica de cambio de número (usando el índice basado en horas % 24)
+            const primeIndex = hoursTranscurred % 24;
+            display.innerText = primes[primeIndex];
+
+            // Sonidos y ciclos de días
+            if (hoursTranscurred % 24 === 0) {
+                daysActive++;
+                dong.play(); // Sonido especial cada 24 horas
+            } else {
+                ding.play(); // Sonido normal cada hora
+            }
+
+            // Guardar y actualizar UI
+            localStorage.setItem('hours', hoursTranscurred);
+            localStorage.setItem('days', daysActive);
+            
+            hrsLabel.innerText = hoursTranscurred;
+            daysLabel.innerText = daysActive;
+        }
+
+        // Inicializar UI al cargar
+        hrsLabel.innerText = hoursTranscurred;
+        daysLabel.innerText = daysActive;
+        display.innerText = primes[hoursTranscurred % 24];
+
+        // Simulación: Para propósitos de demo, cambia cada 3 segundos en lugar de cada hora.
+        // Si quieres que sea cada hora real, cambia 3000 por 3600000.
+        setInterval(updateClock, 3000);
+
+    </script>
+</body>
+</html>
