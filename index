@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identidad Pura - Reloj de Esencias</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --panel: #1a1a1a;
+            --glow: #e94560;
+            --essence: #ffffff;
+            --shadow-deep: 15px 15px 30px #050505, -10px -10px 30px #252525;
+            --inset: inset 6px 6px 12px #050505, inset -4px -4px 12px #252525;
+        }
+
+        body {
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--essence);
+        }
+
+        .console {
+            background: var(--panel);
+            padding: 50px;
+            border-radius: 40px;
+            box-shadow: var(--shadow-deep);
+            border: 1px solid #333;
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+        }
+
+        /* Representación Geométrica de la Cantidad */
+        .essence-display {
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 0 15px var(--glow));
+            margin-bottom: 30px;
+        }
+
+        #geometry-svg {
+            fill: none;
+            stroke: var(--essence);
+            stroke-width: 2;
+            stroke-linejoin: round;
+        }
+
+        .counter-label {
+            font-size: 0.65rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 0.75rem;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            padding: 10px 20px;
+            background: #111;
+            border-radius: 12px;
+            box-shadow: var(--inset);
+            color: #888;
+        }
+
+        .stat-item span { color: var(--glow); font-weight: bold; }
+
+        /* Frase Filosófica Pura */
+        .reflection {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #aaa;
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .reflection b { color: var(--essence); font-weight: normal; border-bottom: 1px solid var(--glow); }
+
+    </style>
+</head>
+<body>
+
+    <div class="console">
+        <div class="counter-label">Frecuencia de Identidad Original</div>
+        
+        <div class="essence-display">
+            <svg id="geometry-svg" width="180" height="180" viewBox="0 0 100 100">
+                <path id="shape-path" d="" />
+            </svg>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">CICLOS: <span id="hrs-count">0</span></div>
+            <div class="stat-item">ESTANCIAS: <span id="days-count">0</span></div>
+        </div>
+
+        <div class="reflection" id="quote">
+            "Eres una <b>presencia única</b>, indivisible por cualquier fuerza que pretenda fragmentarte. Así como esta forma que ves, tu esencia no nace de otras; existe por sí misma. Agradece este instante de consciencia, pues tu lugar aquí es una pieza fundamental que nadie más puede ocupar."
+        </div>
+    </div>
+
+    <script>
+        // Los 24 pilares (cantidades fundamentales)
+        const essentials = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89];
+        
+        let hrs = parseInt(localStorage.getItem('hrs_v2')) || 0;
+        let days = parseInt(localStorage.getItem('days_v2')) || 0;
+
+        const ding = new Audio('https://google.com');
+        const dong = new Audio('https://google.com');
+
+        // Función para dibujar polígonos según la cantidad
+        function drawShape(sides) {
+            const path = document.getElementById('shape-path');
+            const center = 50;
+            const radius = 40;
+            let coords = [];
+
+            for (let i = 0; i < sides; i++) {
+                const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+                const x = center + radius * Math.cos(angle);
+                const y = center + radius * Math.sin(angle);
+                coords.push(`${x},${y}`);
+            }
+
+            path.setAttribute('d', `M ${coords.join(' L ')} Z`);
+        }
+
+        function update() {
+            hrs++;
+            if (hrs % 24 === 0) {
+                days++;
+                dong.play();
+            } else {
+                ding.play();
+            }
+
+            localStorage.setItem('hrs_v2', hrs);
+            localStorage.setItem('days_v2', days);
+            
+            render();
+        }
+
+        function render() {
+            const currentQuantity = essentials[hrs % 24];
+            document.getElementById('hrs-count').innerText = hrs;
+            document.getElementById('days-count').innerText = days;
+            drawShape(currentQuantity);
+        }
+
+        // Iniciar
+        render();
+        // Simulación: Cambia cada 5 segundos para apreciar la geometría
+        setInterval(update, 5000);
+
+    </script>
+</body>
+</html>
